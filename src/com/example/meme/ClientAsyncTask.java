@@ -1,0 +1,114 @@
+package com.example.meme;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.Map;
+
+import android.os.AsyncTask;
+import android.widget.Toast;
+
+public class ClientAsyncTask extends AsyncTask<Void, Void, String> {
+    private MemeMainActivity mActivity;
+
+    public ClientAsyncTask(MemeMainActivity activity) {
+        mActivity = activity;
+        mActivity.dataSource.open();
+    }
+
+    private void updateTimers() {
+        Util.stopUpdate = true;
+        mActivity.dataSource.createTimers(Util.getCurrentTimeInstant(),
+                Util.myTimers, mActivity.receivedTimers);
+        mActivity.dataSource.close();
+        for (String device : Util.myTimers.keySet()) {
+            double myTimer = Util.myTimers.get(device);
+            double receivedTimer = mActivity.receivedTimers.get(device);
+            if (receivedTimer != Double.POSITIVE_INFINITY && myTimer != 0.0) {
+                if (myTimer == Double.POSITIVE_INFINITY
+                        || (receivedTimer + 0.1 < myTimer)) {
+                    Util.myTimers.put(device, receivedTimer + 0.1);
+                }
+            }
+        }
+        Util.updateTimersLocally();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected String doInBackground(Void... params) {
+        Socket socket = null;
+        ObjectOutputStream oos = null;
+        ObjectInputStream ois = null;
+        mActivity.receivedTimers = null;
+        try {
+            mActivity.runOnUiThread(new TextViewRunnable(
+                    "Sleeping for a while to let server up.\n"));
+            Thread.sleep(2000);
+            socket = new Socket(mActivity.groupOwnerAddress.getHostAddress(),
+                    5000);
+            oos = new ObjectOutputStream(socket.getOutputStream());
+            ois = new ObjectInputStream(socket.getInputStream());
+            oos.writeObject(Util.myTimers);
+            oos.flush();
+            while (mActivity.receivedTimers == null) {
+                mActivity.receivedTimers = (Map<String, Double>) ois
+                        .readObject();
+            }
+            updateTimers();
+            return mActivity.receivedTimers.toString();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+            return e.getMessage();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return e.getMessage();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return e.getMessage();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            return e.getMessage();
+        } finally {
+            if (socket != null && !socket.isClosed()) {
+                try {
+                    ois.close();
+                    oos.close();
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    protected void onPostExecute(final String result) {
+
+        super.onPostExecute(result);
+        mActivity.runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+                Toast.makeText(mActivity, result, Toast.LENGTH_SHORT).show();
+                mActivity.textView.append(Util.myTimers + "\n");
+                mActivity.isThisDeviceClient = false;
+            }
+        });
+    }
+
+    class TextViewRunnable implements Runnable {
+        private String string;
+
+        public TextViewRunnable(String string) {
+            this.string = string;
+        }
+
+        @Override
+        public void run() {
+            mActivity.textView.append(string + "\n");
+        }
+
+    }
+}
