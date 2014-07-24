@@ -109,7 +109,7 @@ public class MemeMainActivity extends Activity implements OnClickListener,
 
     TimersDAO dataSource;
     BackgroundTask backgroundTask;
-    private static int timesRun = 0;
+    private int timesRun = 0;
     boolean stopMeme = false;
 
     private void start() {
@@ -153,10 +153,10 @@ public class MemeMainActivity extends Activity implements OnClickListener,
                     }
 
                     // Sleep time before next start.
-                    runOnUiThread(new TextViewRunnable(
-                            "Sleeping for 15 seconds before new run."));
+                    runOnUiThread(new TextViewRunnable("Sleeping for "
+                            + Util.SLEEP_TIME_LONG + " seconds before new run."));
                     try {
-                        Thread.sleep(15000);
+                        Thread.sleep(Util.SLEEP_TIME_LONG);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

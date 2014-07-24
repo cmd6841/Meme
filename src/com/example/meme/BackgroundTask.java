@@ -50,9 +50,10 @@ public class BackgroundTask extends AsyncTask<Void, Void, Void> {
                 mActivity.runOnUiThread(new TextViewRunnable(
                         "Discover button clicked."));
                 try {
-                    mActivity.runOnUiThread(new TextViewRunnable(
-                            "Sleeping 3s till devices are discovered."));
-                    Thread.sleep(3000);
+                    mActivity.runOnUiThread(new TextViewRunnable("Sleeping "
+                            + Util.SLEEP_TIME_SHORT
+                            + " seconds till devices are discovered."));
+                    Thread.sleep(Util.SLEEP_TIME_SHORT);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                     mActivity
@@ -131,10 +132,11 @@ public class BackgroundTask extends AsyncTask<Void, Void, Void> {
                                 null);
                         break;
                     }
-                    mActivity.runOnUiThread(new TextViewRunnable(
-                            "Sleeping 5s till the device is assigned a role."));
+                    mActivity.runOnUiThread(new TextViewRunnable("Sleeping "
+                            + Util.SLEEP_TIME_MEDIUM
+                            + " seconds till the device is assigned a role."));
                     try {
-                        Thread.sleep(5000);
+                        Thread.sleep(Util.SLEEP_TIME_MEDIUM);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -142,10 +144,11 @@ public class BackgroundTask extends AsyncTask<Void, Void, Void> {
                 // If this device was assigned a role of client, wait some
                 // additional time to let the group owner open its socket.
                 if (mActivity.isThisDeviceClient) {
-                    mActivity.runOnUiThread(new TextViewRunnable(
-                            "Sleeping 5s till the device is assigned a role."));
+                    mActivity.runOnUiThread(new TextViewRunnable("Sleeping "
+                            + Util.SLEEP_TIME_MEDIUM
+                            + " seconds till the device is assigned a role."));
                     try {
-                        Thread.sleep(5000);
+                        Thread.sleep(Util.SLEEP_TIME_MEDIUM);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -168,10 +171,11 @@ public class BackgroundTask extends AsyncTask<Void, Void, Void> {
                 // If this device was assigned a role of client, wait some
                 // additional time to let the group owner open its socket.
                 if (mActivity.isThisDeviceClient) {
-                    mActivity.runOnUiThread(new TextViewRunnable(
-                            "Sleeping 5s till the device is assigned a role."));
+                    mActivity.runOnUiThread(new TextViewRunnable("Sleeping "
+                            + Util.SLEEP_TIME_MEDIUM
+                            + " seconds till the device is assigned a role."));
                     try {
-                        Thread.sleep(5000);
+                        Thread.sleep(Util.SLEEP_TIME_MEDIUM);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

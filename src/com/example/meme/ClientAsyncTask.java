@@ -28,8 +28,9 @@ public class ClientAsyncTask extends AsyncTask<Void, Void, String> {
             double receivedTimer = mActivity.receivedTimers.get(device);
             if (receivedTimer != Double.POSITIVE_INFINITY && myTimer != 0.0) {
                 if (myTimer == Double.POSITIVE_INFINITY
-                        || (receivedTimer + 0.1 < myTimer)) {
-                    Util.myTimers.put(device, receivedTimer + 0.1);
+                        || (receivedTimer + Util.TIME_GRADIENT < myTimer)) {
+                    Util.myTimers.put(device, receivedTimer
+                            + Util.TIME_GRADIENT);
                 }
             }
         }
@@ -46,9 +47,9 @@ public class ClientAsyncTask extends AsyncTask<Void, Void, String> {
         try {
             mActivity.runOnUiThread(new TextViewRunnable(
                     "Sleeping for a while to let server up.\n"));
-            Thread.sleep(2000);
+            Thread.sleep(Util.SLEEP_TIME_SHORT);
             socket = new Socket(mActivity.groupOwnerAddress.getHostAddress(),
-                    5000);
+                    Util.SERVER_SOCKET);
             oos = new ObjectOutputStream(socket.getOutputStream());
             ois = new ObjectInputStream(socket.getInputStream());
             oos.writeObject(Util.myTimers);

@@ -11,6 +11,13 @@ import android.util.Log;
 
 public class Util {
     public static final String TAG = Util.class.getSimpleName();
+
+    public static final int SLEEP_TIME_LONG = 15000;
+    public static final int SLEEP_TIME_MEDIUM = 5000;
+    public static final int SLEEP_TIME_SHORT = 3000;
+    public static final double TIME_GRADIENT = 0.1;
+    public static final int SERVER_SOCKET = 5000;
+
     public final static String D1 = "fa:a9:d0:02:21:08";
     public final static String D2 = "fa:a9:d0:03:e0:1b";
     public final static String D4 = "fa:a9:d0:1c:03:16";

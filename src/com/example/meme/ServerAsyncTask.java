@@ -30,8 +30,9 @@ public class ServerAsyncTask extends AsyncTask<Void, Void, String> {
             double receivedTimer = mActivity.receivedTimers.get(device);
             if (receivedTimer != Double.POSITIVE_INFINITY) {
                 if (myTimer == Double.POSITIVE_INFINITY
-                        || (receivedTimer + 0.1 < myTimer)) {
-                    Util.myTimers.put(device, receivedTimer + 0.1);
+                        || (receivedTimer + Util.TIME_GRADIENT < myTimer)) {
+                    Util.myTimers.put(device, receivedTimer
+                            + Util.TIME_GRADIENT);
                 }
             }
         }
@@ -47,7 +48,7 @@ public class ServerAsyncTask extends AsyncTask<Void, Void, String> {
         ObjectInputStream ois = null;
         mActivity.receivedTimers = null;
         try {
-            socket = new ServerSocket(5000);
+            socket = new ServerSocket(Util.SERVER_SOCKET);
             client = socket.accept();
             oos = new ObjectOutputStream(client.getOutputStream());
             ois = new ObjectInputStream(client.getInputStream());
@@ -88,7 +89,7 @@ public class ServerAsyncTask extends AsyncTask<Void, Void, String> {
                 Toast.makeText(mActivity, result, Toast.LENGTH_SHORT).show();
                 mActivity.textView.append(Util.myTimers + "\n");
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(Util.SLEEP_TIME_SHORT);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
