@@ -17,17 +17,10 @@ public class BackgroundTask extends AsyncTask<Void, Void, Void> {
         // If this device was already assigned the Group Owner role, then open
         // the socket for any incoming message.
         if (mActivity.isThisDeviceGO) {
-            mActivity.runOnUiThread(new Runnable() {
-
-                @Override
-                public void run() {
-                    mActivity.buttonSendReceive.callOnClick();
-                    mActivity.textView
-                            .append("Role was already assigned. Send/Receive button clicked.\n");
-                }
-            });
+            mActivity.buttonSendReceive.callOnClick();
+            mActivity.runOnUiThread(new TextViewRunnable(
+                    "Role was already assigned. Send/Receive button clicked."));
         } else {
-
             // Discover peers until list is populated.
             while (mActivity.listPeerListAdapter.isEmpty()) {
                 // If user stopped the task, return immediately.
@@ -52,7 +45,7 @@ public class BackgroundTask extends AsyncTask<Void, Void, Void> {
                 try {
                     mActivity.runOnUiThread(new TextViewRunnable("Sleeping "
                             + Util.SLEEP_TIME_SHORT
-                            + " seconds till devices are discovered."));
+                            + " ms till devices are discovered."));
                     Thread.sleep(Util.SLEEP_TIME_SHORT);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -62,11 +55,29 @@ public class BackgroundTask extends AsyncTask<Void, Void, Void> {
                 }
             }
 
+            // If this device was assigned a role before connecting, then open
+            // socket to exchange data.
+            if (mActivity.isThisDeviceClient || mActivity.isThisDeviceGO) {
+                // If this device was assigned a role of client, wait some
+                // additional time to let the group owner open its socket.
+                if (mActivity.isThisDeviceClient) {
+                    mActivity.runOnUiThread(new TextViewRunnable("Sleeping "
+                            + Util.SLEEP_TIME_MEDIUM
+                            + " ms till the device is assigned a role."));
+                    try {
+                        Thread.sleep(Util.SLEEP_TIME_MEDIUM);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                mActivity.buttonSendReceive.callOnClick();
+                mActivity
+                        .runOnUiThread(new TextViewRunnable(
+                                "Role was already assigned. Send/Receive button clicked."));
+            }
             // After discovering, if no role is assigned to this device yet,
-            // then
-            // wait for a while.
-            if (!mActivity.listPeerListAdapter.isEmpty()) {
-
+            // then wait for a while.
+            else if (!mActivity.listPeerListAdapter.isEmpty()) {
                 // Connect to the first device in the discovered list, which was
                 // not seen before by this device.
                 WifiP2pDevice item = null;
@@ -82,12 +93,7 @@ public class BackgroundTask extends AsyncTask<Void, Void, Void> {
                         break;
                     }
                 }
-                // for (WifiP2pDevice device : mActivity.peers) {
-                // if (device.deviceName.startsWith("D")) {
-                // item = device;
-                // break;
-                // }
-                // }
+
                 // If all the devices were already seen, start with the first
                 // device again and clear the already seen list of devices.
                 if (item == null) {
@@ -134,7 +140,7 @@ public class BackgroundTask extends AsyncTask<Void, Void, Void> {
                     }
                     mActivity.runOnUiThread(new TextViewRunnable("Sleeping "
                             + Util.SLEEP_TIME_MEDIUM
-                            + " seconds till the device is assigned a role."));
+                            + " ms till the device is assigned a role."));
                     try {
                         Thread.sleep(Util.SLEEP_TIME_MEDIUM);
                     } catch (InterruptedException e) {
@@ -146,7 +152,7 @@ public class BackgroundTask extends AsyncTask<Void, Void, Void> {
                 if (mActivity.isThisDeviceClient) {
                     mActivity.runOnUiThread(new TextViewRunnable("Sleeping "
                             + Util.SLEEP_TIME_MEDIUM
-                            + " seconds till the device is assigned a role."));
+                            + " ms till the device is assigned a role."));
                     try {
                         Thread.sleep(Util.SLEEP_TIME_MEDIUM);
                     } catch (InterruptedException e) {
@@ -155,40 +161,9 @@ public class BackgroundTask extends AsyncTask<Void, Void, Void> {
                 }
 
                 // Open socket to exchange data.
-                mActivity.runOnUiThread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        mActivity.buttonSendReceive.callOnClick();
-                        mActivity.textView
-                                .append("Send/Receive button clicked.\n");
-                    }
-                });
-            }
-            // If this device was assigned a role before connecting, then open
-            // socket to exchange data.
-            else if (mActivity.isThisDeviceClient || mActivity.isThisDeviceGO) {
-                // If this device was assigned a role of client, wait some
-                // additional time to let the group owner open its socket.
-                if (mActivity.isThisDeviceClient) {
-                    mActivity.runOnUiThread(new TextViewRunnable("Sleeping "
-                            + Util.SLEEP_TIME_MEDIUM
-                            + " seconds till the device is assigned a role."));
-                    try {
-                        Thread.sleep(Util.SLEEP_TIME_MEDIUM);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                mActivity.runOnUiThread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        mActivity.buttonSendReceive.callOnClick();
-                        mActivity.textView
-                                .append("Role was already assigned. Send/Receive button clicked.\n");
-                    }
-                });
+                mActivity.buttonSendReceive.callOnClick();
+                mActivity.runOnUiThread(new TextViewRunnable(
+                        "Send/Receive button clicked."));
             }
             // If no devices were discovered and no role was assigned, then exit
             // this task.

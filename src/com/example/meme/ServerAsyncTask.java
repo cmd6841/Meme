@@ -7,6 +7,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
 
+import android.media.MediaScannerConnection;
 import android.net.wifi.p2p.WifiP2pManager.ActionListener;
 import android.os.AsyncTask;
 import android.widget.Toast;
@@ -22,7 +23,7 @@ public class ServerAsyncTask extends AsyncTask<Void, Void, String> {
 
     private void updateTimers() {
         Util.stopUpdate = true;
-        mActivity.dataSource.createTimers(Util.getCurrentTimeInstant(),
+        mActivity.dataSource.storeTimers(Util.getCurrentTimeInstant(),
                 Util.myTimers, mActivity.receivedTimers);
         mActivity.dataSource.close();
         for (String device : Util.myTimers.keySet()) {
@@ -82,6 +83,13 @@ public class ServerAsyncTask extends AsyncTask<Void, Void, String> {
     @Override
     protected void onPostExecute(final String result) {
         super.onPostExecute(result);
+        mActivity.dataSource.open();
+        TimersModel latestTimers = mActivity.dataSource.getLatestEntry();
+        mActivity.dataSource.close();
+        mActivity.writeToLogFile(latestTimers.toBigString());
+        MediaScannerConnection.scanFile(mActivity,
+                new String[] { mActivity.logFile.getAbsolutePath() }, null,
+                null);
         mActivity.runOnUiThread(new Runnable() {
 
             @Override

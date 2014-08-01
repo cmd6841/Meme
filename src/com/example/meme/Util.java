@@ -53,7 +53,7 @@ public class Util {
 
             @Override
             public void run() {
-                Log.d(TAG, "Updating timers locally.");
+//                Log.d(TAG, "Updating timers locally.");
                 while (true) {
                     if (stopUpdate) {
                         Log.d(TAG, "Stopped updating timers locally.");
@@ -70,7 +70,7 @@ public class Util {
                             }
                         }
                     }
-                    Log.d(TAG, "Timers updated: " + myTimers);
+//                    Log.d(TAG, "Timers updated: " + myTimers);
                     if (stopUpdate) {
                         Log.d(TAG, "Stopped updating timers locally.");
                         break;

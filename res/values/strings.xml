@@ -4,5 +4,10 @@
     <string name="app_name">Meme</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="discover_peers">Discover Peers</string>
+    <string name="send_receive">Send/Receive</string>
+    <string name="log_updates">Log Updates:</string>
+    <string name="device_list">List of Discovered Devices:</string>
+    <string name="timers_db">Timers Database</string>
 
 </resources>

@@ -1,5 +1,9 @@
 package com.example.meme;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +30,7 @@ import android.net.wifi.p2p.WifiP2pManager.GroupInfoListener;
 import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -103,10 +108,36 @@ public class MemeMainActivity extends Activity implements OnClickListener,
         textView = (TextView) findViewById(R.id.textView_updates);
         textView.setMovementMethod(new ScrollingMovementMethod());
         dataSource = new TimersDAO(this);
+
+        memeDir = new File(
+                Environment
+                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                "MEME");
+        if (!memeDir.exists()) {
+            memeDir.mkdirs();
+        }
+        logFile = new File(memeDir.getAbsolutePath(), Long.valueOf(
+                System.currentTimeMillis()).toString()
+                + ".log");
+
+        try {
+            if (!logFile.exists()) {
+                logFile.createNewFile();
+            }
+            fileWriter = new FileWriter(logFile);
+            logWriter = new BufferedWriter(fileWriter);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         Util.updateTimersLocally();
         start();
     }
 
+    File memeDir;
+    File logFile;
+    FileWriter fileWriter;
+    BufferedWriter logWriter;
     TimersDAO dataSource;
     BackgroundTask backgroundTask;
     private int timesRun = 0;
@@ -128,6 +159,7 @@ public class MemeMainActivity extends Activity implements OnClickListener,
                         runOnUiThread(new TextViewRunnable("MEME stopped."));
                         if (!backgroundTask.isCancelled())
                             backgroundTask.cancel(true);
+                        closeFiles();
                         break;
                     }
                     runOnUiThread(new TextViewRunnable(
@@ -149,6 +181,7 @@ public class MemeMainActivity extends Activity implements OnClickListener,
                         runOnUiThread(new TextViewRunnable("MEME stopped."));
                         if (!backgroundTask.isCancelled())
                             backgroundTask.cancel(true);
+                        closeFiles();
                         break;
                     }
 
@@ -163,6 +196,7 @@ public class MemeMainActivity extends Activity implements OnClickListener,
                 }
             }
         }).start();
+        Log.d(TAG, "MEME start thread stopped!");
     }
 
     class TextViewRunnable implements Runnable {
@@ -337,41 +371,29 @@ public class MemeMainActivity extends Activity implements OnClickListener,
             dataSource.open();
             // Get the latest entry of timers in the database.
             TimersModel timersModel = dataSource.getLatestEntry();
-            StringBuffer buffer = new StringBuffer();
-            int count = 0;
-            int timeInstant = timersModel.getTimeInstant();
-
-            buffer.append("Devices moving closer to " + thisDevice.deviceName
-                    + " at t = " + timeInstant + ":\n");
-
-            // Get the deltaT array from the latest timers entry and for each
-            // positive value in this array, infer that the corresponding device
-            // is moving closer to this device.
-            String delta[] = timersModel.getDeltatTArray().split(",");
-            for (String s : delta) {
-                String split[] = s.split("=");
-                try {
-                    double value = Double.parseDouble(split[1]);
-                    if (value >= 0) {
-                        count += 1;
-                        String deviceName = Util.deviceNameAddressMap
-                                .get(split[0].trim());
-                        buffer.append(deviceName + ": " + split[0] + "\n");
-                    }
-                } catch (NumberFormatException e) {
-                    count -= 1;
-                    continue;
-                }
-
-            }
             dataSource.close();
-            buffer.append("Total devices moving closer: " + count);
+
+            StringBuffer buffer = new StringBuffer();
+            buffer.append("Devices moving closer to " + thisDevice.deviceName
+                    + " at t = " + timersModel.getTimeInstant() + ":\n");
+            buffer.append(timersModel.getDevicesMovingCloser());
+
             Toast.makeText(this, buffer.toString(), Toast.LENGTH_LONG).show();
             return true;
         default:
             return super.onOptionsItemSelected(item);
         }
 
+    }
+
+    public void writeToLogFile(String content) {
+        try {
+            logWriter.write(content);
+            logWriter.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
+        }
     }
 
     public void onResume() {
@@ -404,6 +426,20 @@ public class MemeMainActivity extends Activity implements OnClickListener,
     public void onDestroy() {
         super.onDestroy();
         Util.stopUpdate = true;
+        closeFiles();
     }
 
+    public void closeFiles() {
+        try {
+            if (logWriter != null) {
+                logWriter.flush();
+                logWriter.close();
+                logWriter = null;
+            }
+            // MediaScannerConnection.scanFile(this,
+            // new String[] { logFile.getAbsolutePath() }, null, null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

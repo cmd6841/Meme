@@ -3,6 +3,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="@dimen/_10_dp"
     android:orientation="vertical"
     tools:context="com.example.meme.MemeMainActivity" >
 
@@ -10,21 +11,39 @@
         android:id="@+id/button_discover"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Discover Peers" />
+        android:text="@string/discover_peers" />
 
     <Button
         android:id="@+id/button_send_receive"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Send/Receive" />
+        android:text="@string/send_receive" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/_10_dp"
+        android:text="@string/log_updates"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
         android:id="@+id/textView_updates"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/rectangle"
         android:maxLines="10"
+        android:padding="@dimen/_5_dp"
         android:scrollbars="vertical"
-        android:text="Updates:\n" />
+        android:text="" />
+
+    <TextView
+        android:id="@+id/label_peerList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/_10_dp"
+        android:text="@string/device_list"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <ListView
         android:id="@+id/listView_peerlist"

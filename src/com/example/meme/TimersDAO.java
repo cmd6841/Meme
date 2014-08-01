@@ -29,8 +29,8 @@ public class TimersDAO {
         dbHelper.close();
     }
 
-    public TimersModel createTimers(int timeInstant,
-            Map<String, Double> mtArray, Map<String, Double> rtArray) {
+    public long storeTimers(int timeInstant, Map<String, Double> mtArray,
+            Map<String, Double> rtArray) {
         if (!createNewDB) {
             dbHelper.reCreateTable(db);
             createNewDB = !createNewDB;
@@ -45,15 +45,9 @@ public class TimersDAO {
         values.put(DBHelper.COLUMN_MT, mtArray.toString());
         values.put(DBHelper.COLUMN_RT, rtArray.toString());
         values.put(DBHelper.COLUMN_DELTA_T, deltaTArray.toString());
-        @SuppressWarnings("unused")
-        long insertId = db.insert(DBHelper.TABLE_TIMERS, null, values);
 
-        // Cursor cursor = db.query(DBHelper.TABLE_TIMERS, allColumns,
-        // DBHelper.COLUMN_TIME_INSTANT + " = " + timeInstant, null, null,
-        // null, null);
-        // cursor.moveToFirst();
-        TimersModel newTimers = null;
-        return newTimers;
+        long insertId = db.insert(DBHelper.TABLE_TIMERS, null, values);
+        return insertId;
 
     }
 
