@@ -9,6 +9,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 public class TimersDAO {
     private SQLiteDatabase db;
@@ -35,6 +36,9 @@ public class TimersDAO {
             dbHelper.reCreateTable(db);
             createNewDB = !createNewDB;
         }
+        Log.d("MEME", "TimersDAO");
+        Log.d("MEME", "MT: " + mtArray);
+        Log.d("MEME", "RT: " + rtArray);
         Map<String, Double> deltaTArray = new HashMap<String, Double>();
         for (String device : mtArray.keySet()) {
             deltaTArray.put(device, mtArray.get(device) - rtArray.get(device));
@@ -45,13 +49,17 @@ public class TimersDAO {
         values.put(DBHelper.COLUMN_MT, mtArray.toString());
         values.put(DBHelper.COLUMN_RT, rtArray.toString());
         values.put(DBHelper.COLUMN_DELTA_T, deltaTArray.toString());
-
+        if (!db.isOpen())
+            open();
         long insertId = db.insert(DBHelper.TABLE_TIMERS, null, values);
+        close();
         return insertId;
 
     }
 
     public List<TimersModel> getAllEntries() {
+        if (!db.isOpen())
+            open();
         List<TimersModel> timers = new ArrayList<TimersModel>();
         Cursor cursor = db.query(DBHelper.TABLE_TIMERS, allColumns, null, null,
                 null, null, null);
@@ -63,16 +71,25 @@ public class TimersDAO {
             cursor.moveToNext();
         }
         cursor.close();
+        close();
         return timers;
     }
 
     public TimersModel getLatestEntry() {
+        if (!db.isOpen())
+            open();
         Cursor cursor = db.query(DBHelper.TABLE_TIMERS, allColumns, null, null,
                 null, null, DBHelper.COLUMN_TIME_INSTANT);
-        cursor.moveToLast();
-        TimersModel timersModel = cursorToTimers(cursor);
-        cursor.close();
-        return timersModel;
+        if (cursor.getCount() <= 0) {
+            close();
+            return null;
+        } else {
+            cursor.moveToLast();
+            TimersModel timersModel = cursorToTimers(cursor);
+            cursor.close();
+            close();
+            return timersModel;
+        }
     }
 
     private TimersModel cursorToTimers(Cursor cursor) {

@@ -9,6 +9,12 @@ public class MobileDevice {
         this.device = device;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        MobileDevice device = (MobileDevice) o;
+        return (device.toString().equals(toString()));
+    }
+
     public String toString() {
         return device.deviceName + ": " + device.deviceAddress;
     }

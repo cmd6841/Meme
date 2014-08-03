@@ -2,6 +2,7 @@ package com.example.meme;
 
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.AsyncTask;
+import android.util.Log;
 
 public class BackgroundTask extends AsyncTask<Void, Void, Void> {
     MemeMainActivity mActivity;
@@ -85,11 +86,14 @@ public class BackgroundTask extends AsyncTask<Void, Void, Void> {
                 for (int i = 0; i < devices; i++) {
                     MobileDevice device = mActivity.listPeerListAdapter
                             .getItem(i);
-                    if (mActivity.seenPeers.contains(device))
+                    if (mActivity.seenPeers.contains(device)) {
+                        Log.d("MEME",
+                                "Device already seen. Checking the next device in list.");
                         continue;
-                    else {
+                    } else {
                         item = device.device;
                         mActivity.seenPeers.add(device);
+                        Log.d("MEME", "Seen Peers: " + mActivity.seenPeers);
                         break;
                     }
                 }

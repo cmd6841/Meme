@@ -16,14 +16,12 @@ public class ClientAsyncTask extends AsyncTask<Void, Void, String> {
 
     public ClientAsyncTask(MemeMainActivity activity) {
         mActivity = activity;
-        mActivity.dataSource.open();
     }
 
     private void updateTimers() {
         Util.stopUpdate = true;
         mActivity.dataSource.storeTimers(Util.getCurrentTimeInstant(),
                 Util.myTimers, mActivity.receivedTimers);
-        mActivity.dataSource.close();
         for (String device : Util.myTimers.keySet()) {
             double myTimer = Util.myTimers.get(device);
             double receivedTimer = mActivity.receivedTimers.get(device);
@@ -89,9 +87,7 @@ public class ClientAsyncTask extends AsyncTask<Void, Void, String> {
     protected void onPostExecute(final String result) {
 
         super.onPostExecute(result);
-        mActivity.dataSource.open();
         TimersModel latestTimers = mActivity.dataSource.getLatestEntry();
-        mActivity.dataSource.close();
         mActivity.writeToLogFile(latestTimers.toBigString());
         MediaScannerConnection.scanFile(mActivity,
                 new String[] { mActivity.logFile.getAbsolutePath() }, null,

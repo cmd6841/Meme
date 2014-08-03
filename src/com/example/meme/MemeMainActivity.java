@@ -281,9 +281,16 @@ public class MemeMainActivity extends Activity implements OnClickListener,
             } else if (isThisDeviceClient) {
                 new ClientAsyncTask(this).execute();
             } else {
-                Toast.makeText(MemeMainActivity.this,
-                        "Device not yet assigned any role.", Toast.LENGTH_SHORT)
-                        .show();
+                runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        Toast.makeText(MemeMainActivity.this,
+                                "Device not yet assigned any role.",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+
             }
             break;
 
@@ -368,17 +375,20 @@ public class MemeMainActivity extends Activity implements OnClickListener,
             // Apply the estimation algorithm to show which devices are moving
             // closer to this device.
         case R.id.item_predict:
-            dataSource.open();
             // Get the latest entry of timers in the database.
             TimersModel timersModel = dataSource.getLatestEntry();
-            dataSource.close();
 
             StringBuffer buffer = new StringBuffer();
-            buffer.append("Devices moving closer to " + thisDevice.deviceName
-                    + " at t = " + timersModel.getTimeInstant() + ":\n");
-            buffer.append(timersModel.getDevicesMovingCloser());
-
+            if (timersModel != null) {
+                buffer.append("Devices moving closer to "
+                        + thisDevice.deviceName + " at t = "
+                        + timersModel.getTimeInstant() + ":\n");
+                buffer.append(timersModel.getDevicesMovingCloser());
+            } else {
+                buffer.append("No timers present in database!");
+            }
             Toast.makeText(this, buffer.toString(), Toast.LENGTH_LONG).show();
+
             return true;
         default:
             return super.onOptionsItemSelected(item);

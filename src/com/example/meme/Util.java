@@ -21,6 +21,9 @@ public class Util {
     public final static String D1 = "fa:a9:d0:02:21:08";
     public final static String D2 = "fa:a9:d0:03:e0:1b";
     public final static String D4 = "fa:a9:d0:1c:03:16";
+    public final static String N1 = "fa:a9:d0:07:64:47";
+    public final static String N2 = "fa:a9:d0:03:ea:82";
+
     static String thisDeviceAddress;
 
     static Map<String, Double> myTimers = new HashMap<String, Double>();
@@ -28,6 +31,8 @@ public class Util {
         myTimers.put(D1, Double.POSITIVE_INFINITY);
         myTimers.put(D2, Double.POSITIVE_INFINITY);
         myTimers.put(D4, Double.POSITIVE_INFINITY);
+        myTimers.put(N1, Double.POSITIVE_INFINITY);
+        myTimers.put(N2, Double.POSITIVE_INFINITY);
     }
 
     static Map<String, String> deviceNameAddressMap = new HashMap<String, String>();
@@ -35,6 +40,8 @@ public class Util {
         deviceNameAddressMap.put(D1, "D1");
         deviceNameAddressMap.put(D2, "D2");
         deviceNameAddressMap.put(D4, "D4");
+        deviceNameAddressMap.put(N1, "N1");
+        deviceNameAddressMap.put(N2, "N2");
     }
 
     static final long startTime = System.currentTimeMillis();
@@ -53,7 +60,7 @@ public class Util {
 
             @Override
             public void run() {
-//                Log.d(TAG, "Updating timers locally.");
+                // Log.d(TAG, "Updating timers locally.");
                 while (true) {
                     if (stopUpdate) {
                         Log.d(TAG, "Stopped updating timers locally.");
@@ -70,7 +77,7 @@ public class Util {
                             }
                         }
                     }
-//                    Log.d(TAG, "Timers updated: " + myTimers);
+                    // Log.d(TAG, "Timers updated: " + myTimers);
                     if (stopUpdate) {
                         Log.d(TAG, "Stopped updating timers locally.");
                         break;
