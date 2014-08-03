@@ -97,7 +97,7 @@ public class ClientAsyncTask extends AsyncTask<Void, Void, String> {
             @Override
             public void run() {
                 Toast.makeText(mActivity, result, Toast.LENGTH_SHORT).show();
-                mActivity.textView.append(Util.myTimers + "\n");
+                mActivity.appendTextAndScroll(Util.myTimers + "\n");
                 mActivity.isThisDeviceClient = false;
             }
         });
@@ -112,7 +112,7 @@ public class ClientAsyncTask extends AsyncTask<Void, Void, String> {
 
         @Override
         public void run() {
-            mActivity.textView.append(string + "\n");
+            mActivity.appendTextAndScroll(string + "\n");
         }
 
     }

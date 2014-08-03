@@ -66,6 +66,9 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                     .getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
             Util.myTimers.put(mActivity.thisDevice.deviceAddress, 0.0);
             Util.thisDeviceAddress = mActivity.thisDevice.deviceAddress;
+
+            mActivity.setTitle("MEME (" + mActivity.thisDevice.deviceName
+                    + ": " + mActivity.thisDevice.deviceAddress + ")");
         }
     }
 }

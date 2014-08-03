@@ -115,8 +115,8 @@ public class BackgroundTask extends AsyncTask<Void, Void, Void> {
 
                     @Override
                     public void run() {
-                        mActivity.textView.append("Devices discovered.\n");
-                        mActivity.textView.append("Connecting to "
+                        mActivity.appendTextAndScroll("Devices discovered.\n");
+                        mActivity.appendTextAndScroll("Connecting to "
                                 + device.deviceName + "\n");
                         mActivity.connectToPeer(device);
                     }
@@ -189,7 +189,7 @@ public class BackgroundTask extends AsyncTask<Void, Void, Void> {
 
         @Override
         public void run() {
-            mActivity.textView.append(string + "\n");
+            mActivity.appendTextAndScroll(string + "\n");
         }
 
     }

@@ -31,6 +31,7 @@ import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.Layout;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -208,7 +209,7 @@ public class MemeMainActivity extends Activity implements OnClickListener,
 
         @Override
         public void run() {
-            textView.append(string + "\n");
+            appendTextAndScroll(string + "\n");
             listPeerListAdapter.notifyDataSetChanged();
         }
 
@@ -221,19 +222,19 @@ public class MemeMainActivity extends Activity implements OnClickListener,
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo info) {
         Log.i(TAG, "Connection info received.");
-        textView.append("Connection info received.\n");
+        appendTextAndScroll("Connection info received.\n");
         groupOwnerAddress = info.groupOwnerAddress;
 
         if (info.groupFormed && info.isGroupOwner) {
-            textView.append("This device is the groupowner.\n");
+            appendTextAndScroll("This device is the groupowner.\n");
             Log.i(TAG, "This device is the groupowner.");
             isThisDeviceGO = true;
         } else if (info.groupFormed) {
-            textView.append("This device is a client.\n");
+            appendTextAndScroll("This device is a client.\n");
             Log.i(TAG, "This device is a client.");
             isThisDeviceClient = true;
         } else {
-            textView.append("This device is not connected.\n");
+            appendTextAndScroll("This device is not connected.\n");
             Log.d(TAG, "This device is not connected.");
         }
     }
@@ -241,10 +242,10 @@ public class MemeMainActivity extends Activity implements OnClickListener,
     @Override
     public void onGroupInfoAvailable(WifiP2pGroup group) {
         if (group.isGroupOwner()) {
-            textView.append(group.getNetworkName() + " created.\n");
+            appendTextAndScroll(group.getNetworkName() + " created.\n");
             Log.d(TAG, group.getNetworkName() + " created.");
         } else {
-            textView.append(group.getNetworkName() + "created by "
+            appendTextAndScroll(group.getNetworkName() + "created by "
                     + group.getOwner().deviceName + " joined.\n");
             Log.d(TAG,
                     group.getNetworkName() + "created by "
@@ -322,26 +323,26 @@ public class MemeMainActivity extends Activity implements OnClickListener,
 
             @Override
             public void onSuccess() {
-                textView.append("Connection to " + peer.deviceName
+                appendTextAndScroll("Connection to " + peer.deviceName
                         + " successful.\n");
                 Log.i(TAG, "Connection to " + peer.deviceName + " successful.");
                 if (peer.isGroupOwner()) {
                     Toast.makeText(MemeMainActivity.this,
                             "Connected to GO: " + peer.deviceName,
                             Toast.LENGTH_SHORT).show();
-                    textView.append("Connected to GO: " + peer.deviceName
+                    appendTextAndScroll("Connected to GO: " + peer.deviceName
                             + "\n");
                 } else {
                     Toast.makeText(MemeMainActivity.this,
                             "Connected to " + peer.deviceName,
                             Toast.LENGTH_SHORT).show();
-                    textView.append("Connected to " + peer.deviceName + "\n");
+                    appendTextAndScroll("Connected to " + peer.deviceName + "\n");
                 }
             }
 
             @Override
             public void onFailure(int reason) {
-                textView.append("connect() failed. Reason: " + reason + "\n");
+                appendTextAndScroll("connect() failed. Reason: " + reason + "\n");
                 Toast.makeText(MemeMainActivity.this,
                         "Connect failed. Reason: " + reason, Toast.LENGTH_SHORT)
                         .show();
@@ -450,6 +451,20 @@ public class MemeMainActivity extends Activity implements OnClickListener,
             // new String[] { logFile.getAbsolutePath() }, null, null);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void appendTextAndScroll(String text) {
+        if (textView != null) {
+            textView.append(text + "\n");
+            final Layout layout = textView.getLayout();
+            if (layout != null) {
+                int scrollDelta = layout
+                        .getLineBottom(textView.getLineCount() - 1)
+                        - textView.getScrollY() - textView.getHeight();
+                if (scrollDelta > 0)
+                    textView.scrollBy(0, scrollDelta);
+            }
         }
     }
 }

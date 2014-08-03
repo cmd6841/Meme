@@ -92,7 +92,7 @@ public class ServerAsyncTask extends AsyncTask<Void, Void, String> {
             @Override
             public void run() {
                 Toast.makeText(mActivity, result, Toast.LENGTH_SHORT).show();
-                mActivity.textView.append(Util.myTimers + "\n");
+                mActivity.appendTextAndScroll(Util.myTimers + "\n");
                 try {
                     Thread.sleep(Util.SLEEP_TIME_SHORT);
                 } catch (InterruptedException e) {
@@ -128,7 +128,7 @@ public class ServerAsyncTask extends AsyncTask<Void, Void, String> {
 
         @Override
         public void run() {
-            mActivity.textView.append(string + "\n");
+            mActivity.appendTextAndScroll(string + "\n");
         }
 
     }
