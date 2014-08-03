@@ -20,6 +20,7 @@ public class Util {
 
     public final static String D1 = "fa:a9:d0:02:21:08";
     public final static String D2 = "fa:a9:d0:03:e0:1b";
+    public final static String D3 = "fa:a9:d0:06:fe:c9";
     public final static String D4 = "fa:a9:d0:1c:03:16";
     public final static String N1 = "fa:a9:d0:07:64:d7";
     public final static String N2 = "fa:a9:d0:03:ea:82";
@@ -30,6 +31,7 @@ public class Util {
     static {
         myTimers.put(D1, Double.POSITIVE_INFINITY);
         myTimers.put(D2, Double.POSITIVE_INFINITY);
+        myTimers.put(D3, Double.POSITIVE_INFINITY);
         myTimers.put(D4, Double.POSITIVE_INFINITY);
         myTimers.put(N1, Double.POSITIVE_INFINITY);
         myTimers.put(N2, Double.POSITIVE_INFINITY);
@@ -39,6 +41,7 @@ public class Util {
     static {
         deviceNameAddressMap.put(D1, "D1");
         deviceNameAddressMap.put(D2, "D2");
+        deviceNameAddressMap.put(D3, "D3");
         deviceNameAddressMap.put(D4, "D4");
         deviceNameAddressMap.put(N1, "N1");
         deviceNameAddressMap.put(N2, "N2");

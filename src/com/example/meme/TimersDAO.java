@@ -54,6 +54,9 @@ public class TimersDAO {
 
         long insertId = db.insert(DBHelper.TABLE_TIMERS, null, values);
         close();
+        if (insertId != -1 && !MemeMainActivity.isDatabaseUpdated) {
+            MemeMainActivity.isDatabaseUpdated = true;
+        }
         return insertId;
 
     }

@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
@@ -34,6 +35,10 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                 Log.i(TAG, "Wifi P2P is enabled.");
             } else {
                 Log.i(TAG, "Wifi P2P is disabled.");
+                WifiManager wifiManager = (WifiManager) mActivity
+                        .getSystemService(Context.WIFI_SERVICE);
+                wifiManager.setWifiEnabled(false);
+                wifiManager.setWifiEnabled(true);
             }
         } else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
             if (mManager != null) {

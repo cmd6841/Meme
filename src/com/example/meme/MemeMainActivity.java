@@ -132,6 +132,7 @@ public class MemeMainActivity extends Activity implements OnClickListener,
         }
 
         Util.updateTimersLocally();
+        startScan();
         start();
     }
 
@@ -188,7 +189,7 @@ public class MemeMainActivity extends Activity implements OnClickListener,
 
                     // Sleep time before next start.
                     runOnUiThread(new TextViewRunnable("Sleeping for "
-                            + Util.SLEEP_TIME_LONG + " seconds before new run."));
+                            + Util.SLEEP_TIME_LONG + " ms before new run."));
                     try {
                         Thread.sleep(Util.SLEEP_TIME_LONG);
                     } catch (InterruptedException e) {
@@ -198,6 +199,37 @@ public class MemeMainActivity extends Activity implements OnClickListener,
             }
         }).start();
         Log.d(TAG, "MEME start thread stopped!");
+    }
+
+    public void startScan() {
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                while (true) {
+                    // Stop the background thread execution and this thread
+                    // execution.
+                    if (stopMeme) {
+                        runOnUiThread(new TextViewRunnable(
+                                "Scanning devices stopped."));
+                        break;
+                    }
+
+                    // Keep discovering devices and sleep for 3 seconds between
+                    // calls to discover.
+                    buttonDiscover.callOnClick();
+                    Log.d(TAG, "Discover button clicked.");
+                    try {
+                        Log.d(TAG, "Sleeping " + Util.SLEEP_TIME_LONG
+                                + " ms till devices are discovered.");
+                        Thread.sleep(Util.SLEEP_TIME_LONG);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        runOnUiThread(new TextViewRunnable(e.getMessage()));
+                    }
+                }
+            }
+        }).start();
     }
 
     class TextViewRunnable implements Runnable {
@@ -336,13 +368,15 @@ public class MemeMainActivity extends Activity implements OnClickListener,
                     Toast.makeText(MemeMainActivity.this,
                             "Connected to " + peer.deviceName,
                             Toast.LENGTH_SHORT).show();
-                    appendTextAndScroll("Connected to " + peer.deviceName + "\n");
+                    appendTextAndScroll("Connected to " + peer.deviceName
+                            + "\n");
                 }
             }
 
             @Override
             public void onFailure(int reason) {
-                appendTextAndScroll("connect() failed. Reason: " + reason + "\n");
+                appendTextAndScroll("connect() failed. Reason: " + reason
+                        + "\n");
                 Toast.makeText(MemeMainActivity.this,
                         "Connect failed. Reason: " + reason, Toast.LENGTH_SHORT)
                         .show();
@@ -357,6 +391,8 @@ public class MemeMainActivity extends Activity implements OnClickListener,
         getMenuInflater().inflate(R.menu.meme_main, menu);
         return true;
     }
+
+    static boolean isDatabaseUpdated = false;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -376,17 +412,21 @@ public class MemeMainActivity extends Activity implements OnClickListener,
             // Apply the estimation algorithm to show which devices are moving
             // closer to this device.
         case R.id.item_predict:
-            // Get the latest entry of timers in the database.
-            TimersModel timersModel = dataSource.getLatestEntry();
-
             StringBuffer buffer = new StringBuffer();
-            if (timersModel != null) {
-                buffer.append("Devices moving closer to "
-                        + thisDevice.deviceName + " at t = "
-                        + timersModel.getTimeInstant() + ":\n");
-                buffer.append(timersModel.getDevicesMovingCloser());
+            if (!isDatabaseUpdated) {
+                buffer.append("Current database not updated. No new timers present in database!");
             } else {
-                buffer.append("No timers present in database!");
+                // Get the latest entry of timers in the database.
+                TimersModel timersModel = dataSource.getLatestEntry();
+
+                if (timersModel != null) {
+                    buffer.append("Devices moving closer to "
+                            + thisDevice.deviceName + " at t = "
+                            + timersModel.getTimeInstant() + ":\n");
+                    buffer.append(timersModel.getDevicesMovingCloser());
+                } else {
+                    buffer.append("No timers present in database!");
+                }
             }
             Toast.makeText(this, buffer.toString(), Toast.LENGTH_LONG).show();
 

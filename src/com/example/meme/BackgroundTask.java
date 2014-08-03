@@ -40,20 +40,20 @@ public class BackgroundTask extends AsyncTask<Void, Void, Void> {
                 }
                 // Keep discovering devices and sleep for 3 seconds between
                 // calls to discover.
-                mActivity.buttonDiscover.callOnClick();
-                mActivity.runOnUiThread(new TextViewRunnable(
-                        "Discover button clicked."));
-                try {
-                    mActivity.runOnUiThread(new TextViewRunnable("Sleeping "
-                            + Util.SLEEP_TIME_SHORT
-                            + " ms till devices are discovered."));
-                    Thread.sleep(Util.SLEEP_TIME_SHORT);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    mActivity
-                            .runOnUiThread(new TextViewRunnable(e.getMessage()));
-                    return null;
-                }
+//                mActivity.buttonDiscover.callOnClick();
+//                mActivity.runOnUiThread(new TextViewRunnable(
+//                        "Discover button clicked."));
+//                try {
+//                    mActivity.runOnUiThread(new TextViewRunnable("Sleeping "
+//                            + Util.SLEEP_TIME_SHORT
+//                            + " ms till devices are discovered."));
+//                    Thread.sleep(Util.SLEEP_TIME_SHORT);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                    mActivity
+//                            .runOnUiThread(new TextViewRunnable(e.getMessage()));
+//                    return null;
+//                }
             }
 
             // If this device was assigned a role before connecting, then open
