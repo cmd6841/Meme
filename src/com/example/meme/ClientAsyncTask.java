@@ -88,10 +88,12 @@ public class ClientAsyncTask extends AsyncTask<Void, Void, String> {
 
         super.onPostExecute(result);
         TimersModel latestTimers = mActivity.dataSource.getLatestEntry();
-        mActivity.writeToLogFile(latestTimers.toBigString());
-        MediaScannerConnection.scanFile(mActivity,
-                new String[] { mActivity.logFile.getAbsolutePath() }, null,
-                null);
+        if (latestTimers != null) {
+            mActivity.writeToLogFile(latestTimers.toBigString());
+            MediaScannerConnection.scanFile(mActivity,
+                    new String[] { mActivity.logFile.getAbsolutePath() }, null,
+                    null);
+        }
         mActivity.runOnUiThread(new Runnable() {
 
             @Override

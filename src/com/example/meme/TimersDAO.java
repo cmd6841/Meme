@@ -32,6 +32,8 @@ public class TimersDAO {
 
     public long storeTimers(int timeInstant, Map<String, Double> mtArray,
             Map<String, Double> rtArray) {
+        if (db == null || !db.isOpen())
+            open();
         if (!createNewDB) {
             dbHelper.reCreateTable(db);
             createNewDB = !createNewDB;
@@ -49,8 +51,7 @@ public class TimersDAO {
         values.put(DBHelper.COLUMN_MT, mtArray.toString());
         values.put(DBHelper.COLUMN_RT, rtArray.toString());
         values.put(DBHelper.COLUMN_DELTA_T, deltaTArray.toString());
-        if (!db.isOpen())
-            open();
+
         long insertId = db.insert(DBHelper.TABLE_TIMERS, null, values);
         close();
         return insertId;
@@ -58,7 +59,7 @@ public class TimersDAO {
     }
 
     public List<TimersModel> getAllEntries() {
-        if (!db.isOpen())
+        if (db == null || !db.isOpen())
             open();
         List<TimersModel> timers = new ArrayList<TimersModel>();
         Cursor cursor = db.query(DBHelper.TABLE_TIMERS, allColumns, null, null,
@@ -76,7 +77,7 @@ public class TimersDAO {
     }
 
     public TimersModel getLatestEntry() {
-        if (!db.isOpen())
+        if (db == null || !db.isOpen())
             open();
         Cursor cursor = db.query(DBHelper.TABLE_TIMERS, allColumns, null, null,
                 null, null, DBHelper.COLUMN_TIME_INSTANT);

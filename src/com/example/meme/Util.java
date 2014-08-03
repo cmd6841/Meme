@@ -21,7 +21,7 @@ public class Util {
     public final static String D1 = "fa:a9:d0:02:21:08";
     public final static String D2 = "fa:a9:d0:03:e0:1b";
     public final static String D4 = "fa:a9:d0:1c:03:16";
-    public final static String N1 = "fa:a9:d0:07:64:47";
+    public final static String N1 = "fa:a9:d0:07:64:d7";
     public final static String N2 = "fa:a9:d0:03:ea:82";
 
     static String thisDeviceAddress;

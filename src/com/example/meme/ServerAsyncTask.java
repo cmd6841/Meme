@@ -83,10 +83,12 @@ public class ServerAsyncTask extends AsyncTask<Void, Void, String> {
     protected void onPostExecute(final String result) {
         super.onPostExecute(result);
         TimersModel latestTimers = mActivity.dataSource.getLatestEntry();
-        mActivity.writeToLogFile(latestTimers.toBigString());
-        MediaScannerConnection.scanFile(mActivity,
-                new String[] { mActivity.logFile.getAbsolutePath() }, null,
-                null);
+        if (latestTimers != null) {
+            mActivity.writeToLogFile(latestTimers.toBigString());
+            MediaScannerConnection.scanFile(mActivity,
+                    new String[] { mActivity.logFile.getAbsolutePath() }, null,
+                    null);
+        }
         mActivity.runOnUiThread(new Runnable() {
 
             @Override
