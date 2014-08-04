@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -60,7 +61,7 @@ public class MemeMainActivity extends Activity implements OnClickListener,
     ArrayAdapter<MobileDevice> listPeerListAdapter;
     List<MobileDevice> peers = new ArrayList<MobileDevice>();
     List<MobileDevice> seenPeers = new ArrayList<MobileDevice>();
-    public WifiP2pDevice thisDevice;
+    public static WifiP2pDevice thisDevice;
     TextView textView;
 
     @Override
@@ -389,29 +390,36 @@ public class MemeMainActivity extends Activity implements OnClickListener,
             // Apply the estimation algorithm to show which devices are moving
             // closer to this device.
         case R.id.item_predict:
-            StringBuffer buffer = new StringBuffer();
+            AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+            dialog.setPositiveButton("Close", null);
+
             if (!isDatabaseUpdated) {
-                buffer.append("Current database not updated. No new timers present in database!");
+                dialog.setTitle("Error!");
+                dialog.setMessage("Current database not updated. No new timers present in database!");
             } else {
                 // Get the latest entry of timers in the database.
                 TimersModel timersModel = dataSource.getLatestEntry();
-
-                if (timersModel != null) {
-                    buffer.append("Devices moving closer to "
-                            + thisDevice.deviceName + " at t = "
-                            + timersModel.getTimeInstant() + ":\n");
-                    buffer.append(timersModel.getDevicesMovingCloser());
-                } else {
-                    buffer.append("No timers present in database!");
-                }
+                dialog.setTitle("Time Instant: " + timersModel.getTimeInstant());
+                dialog.setMessage(predict(timersModel));
             }
-            Toast.makeText(this, buffer.toString(), Toast.LENGTH_LONG).show();
-
+            dialog.show();
             return true;
         default:
             return super.onOptionsItemSelected(item);
         }
 
+    }
+
+    public static String predict(TimersModel timersModel) {
+        StringBuffer buffer = new StringBuffer();
+        if (timersModel != null) {
+            buffer.append("Devices moving closer to " + thisDevice.deviceName
+                    + " at t = " + timersModel.getTimeInstant() + ":\n");
+            buffer.append(timersModel.getDevicesMovingCloser());
+        } else {
+            buffer.append("No timers present in database!");
+        }
+        return buffer.toString();
     }
 
     public void writeToLogFile(String content) {

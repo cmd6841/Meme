@@ -2,6 +2,7 @@ package com.example.meme;
 
 import java.util.List;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -33,8 +34,14 @@ public class TimersActivity extends ListActivity {
         String toast = "Time Instant: " + timersModel.getTimeInstant() + "\n"
                 + "MT: " + timersModel.getMtArray() + "\n" + "RT: "
                 + timersModel.getRtArray() + "\n" + "DeltaT: {"
-                + timersModel.getDeltatTArray() + "}";
-        Toast.makeText(this, toast, Toast.LENGTH_SHORT).show();
+                + timersModel.getDeltatTArray() + "}\n"
+                + MemeMainActivity.predict(timersModel);
+
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("Time Instant: " + timersModel.getTimeInstant());
+        dialog.setPositiveButton("Close", null);
+        dialog.setMessage(toast);
+        dialog.show();
     }
 
     @Override
