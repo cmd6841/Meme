@@ -2,6 +2,7 @@ package com.example.meme;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -106,4 +107,11 @@ public class Util {
         return mobileDevices;
     }
 
+    public static String getNewFileName() {
+        Date date = new Date();
+        String[] split = date.toString().split(" ");
+        String temp = split[1] + split[2] + ":" + split[3] + ".log";
+        String fileName = temp.replaceAll(":", "_");
+        return fileName;
+    }
 }

@@ -117,9 +117,7 @@ public class MemeMainActivity extends Activity implements OnClickListener,
         if (!memeDir.exists()) {
             memeDir.mkdirs();
         }
-        logFile = new File(memeDir.getAbsolutePath(), Long.valueOf(
-                System.currentTimeMillis()).toString()
-                + ".log");
+        logFile = new File(memeDir.getAbsolutePath(), Util.getNewFileName());
 
         try {
             if (!logFile.exists()) {
@@ -132,7 +130,6 @@ public class MemeMainActivity extends Activity implements OnClickListener,
         }
 
         Util.updateTimersLocally();
-        startScan();
         start();
     }
 
@@ -199,37 +196,6 @@ public class MemeMainActivity extends Activity implements OnClickListener,
             }
         }).start();
         Log.d(TAG, "MEME start thread stopped!");
-    }
-
-    public void startScan() {
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                while (true) {
-                    // Stop the background thread execution and this thread
-                    // execution.
-                    if (stopMeme) {
-                        runOnUiThread(new TextViewRunnable(
-                                "Scanning devices stopped."));
-                        break;
-                    }
-
-                    // Keep discovering devices and sleep for 3 seconds between
-                    // calls to discover.
-                    buttonDiscover.callOnClick();
-                    Log.d(TAG, "Discover button clicked.");
-                    try {
-                        Log.d(TAG, "Sleeping " + Util.SLEEP_TIME_LONG
-                                + " ms till devices are discovered.");
-                        Thread.sleep(Util.SLEEP_TIME_LONG);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        runOnUiThread(new TextViewRunnable(e.getMessage()));
-                    }
-                }
-            }
-        }).start();
     }
 
     class TextViewRunnable implements Runnable {
@@ -346,42 +312,53 @@ public class MemeMainActivity extends Activity implements OnClickListener,
         }
     };
 
-    public void connectToPeer(final WifiP2pDevice peer) {
+    public boolean connectToPeer(final WifiP2pDevice peer) {
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = peer.deviceAddress;
         config.wps.setup = WpsInfo.PBC;
-        Log.d(TAG, "Connecting to the GO.");
-        mManager.connect(mChannel, config, new ActionListener() {
+        if (peer.status == WifiP2pDevice.CONNECTED
+                || peer.status == WifiP2pDevice.UNAVAILABLE
+                || peer.status == WifiP2pDevice.FAILED) {
+            Log.d("MEME", "Connection not possible - Peer status: "
+                    + peer.status);
+            return false;
+        } else {
+            Log.d("MEME", "Connection is possible - Peer status: "
+                    + peer.status);
+            mManager.connect(mChannel, config, new ActionListener() {
 
-            @Override
-            public void onSuccess() {
-                appendTextAndScroll("Connection to " + peer.deviceName
-                        + " successful.\n");
-                Log.i(TAG, "Connection to " + peer.deviceName + " successful.");
-                if (peer.isGroupOwner()) {
-                    Toast.makeText(MemeMainActivity.this,
-                            "Connected to GO: " + peer.deviceName,
-                            Toast.LENGTH_SHORT).show();
-                    appendTextAndScroll("Connected to GO: " + peer.deviceName
-                            + "\n");
-                } else {
-                    Toast.makeText(MemeMainActivity.this,
-                            "Connected to " + peer.deviceName,
-                            Toast.LENGTH_SHORT).show();
-                    appendTextAndScroll("Connected to " + peer.deviceName
-                            + "\n");
+                @Override
+                public void onSuccess() {
+                    appendTextAndScroll("Connection to " + peer.deviceName
+                            + " successful.\n");
+                    Log.i(TAG, "Connection to " + peer.deviceName
+                            + " successful.");
+                    if (peer.isGroupOwner()) {
+                        Toast.makeText(MemeMainActivity.this,
+                                "Connected to GO: " + peer.deviceName,
+                                Toast.LENGTH_SHORT).show();
+                        appendTextAndScroll("Connected to GO: "
+                                + peer.deviceName + "\n");
+                    } else {
+                        Toast.makeText(MemeMainActivity.this,
+                                "Connected to " + peer.deviceName,
+                                Toast.LENGTH_SHORT).show();
+                        appendTextAndScroll("Connected to " + peer.deviceName
+                                + "\n");
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(int reason) {
-                appendTextAndScroll("connect() failed. Reason: " + reason
-                        + "\n");
-                Toast.makeText(MemeMainActivity.this,
-                        "Connect failed. Reason: " + reason, Toast.LENGTH_SHORT)
-                        .show();
-            }
-        });
+                @Override
+                public void onFailure(int reason) {
+                    appendTextAndScroll("connect() failed. Reason: " + reason
+                            + "\n");
+                    Toast.makeText(MemeMainActivity.this,
+                            "Connect failed. Reason: " + reason,
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+            return true;
+        }
     }
 
     @Override
