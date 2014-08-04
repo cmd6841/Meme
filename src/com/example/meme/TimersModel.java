@@ -45,7 +45,8 @@ public class TimersModel {
     public String toBigString() {
         StringBuffer buffer = new StringBuffer();
         buffer.append(timeInstant + "," + mtArray + "," + rtArray + ","
-                + deltatTArray);
+                + deltatTArray + "\n");
+        buffer.append(MemeMainActivity.predict(this));
         return buffer.toString();
     }
 

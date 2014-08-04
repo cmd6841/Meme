@@ -240,15 +240,17 @@ public class MemeMainActivity extends Activity implements OnClickListener,
 
     @Override
     public void onGroupInfoAvailable(WifiP2pGroup group) {
-        if (group.isGroupOwner()) {
-            appendTextAndScroll(group.getNetworkName() + " created.\n");
-            Log.d(TAG, group.getNetworkName() + " created.");
-        } else {
-            appendTextAndScroll(group.getNetworkName() + "created by "
-                    + group.getOwner().deviceName + " joined.\n");
-            Log.d(TAG,
-                    group.getNetworkName() + "created by "
-                            + group.getOwner().deviceName + " joined.");
+        if (group != null) {
+            if (group.isGroupOwner()) {
+                appendTextAndScroll(group.getNetworkName() + " created.\n");
+                Log.d(TAG, group.getNetworkName() + " created.");
+            } else {
+                appendTextAndScroll(group.getNetworkName() + "created by "
+                        + group.getOwner().deviceName + " joined.\n");
+                Log.d(TAG,
+                        group.getNetworkName() + "created by "
+                                + group.getOwner().deviceName + " joined.");
+            }
         }
     }
 
