@@ -67,13 +67,14 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
         } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION
                 .equals(action)) {
             Log.i(TAG, "This device changed.");
-            mActivity.thisDevice = (WifiP2pDevice) intent
+            MemeMainActivity.thisDevice = (WifiP2pDevice) intent
                     .getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
-            Util.myTimers.put(mActivity.thisDevice.deviceAddress, 0.0);
-            Util.thisDeviceAddress = mActivity.thisDevice.deviceAddress;
+            Util.myTimers.put(MemeMainActivity.thisDevice.deviceAddress, 0.0);
+            Util.thisDeviceAddress = MemeMainActivity.thisDevice.deviceAddress;
 
-            mActivity.setTitle("MEME (" + mActivity.thisDevice.deviceName
-                    + ": " + mActivity.thisDevice.deviceAddress + ")");
+            mActivity.setTitle("MEME ("
+                    + MemeMainActivity.thisDevice.deviceName + ": "
+                    + MemeMainActivity.thisDevice.deviceAddress + ")");
         }
     }
 }
