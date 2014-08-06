@@ -34,7 +34,7 @@ public class TimersActivity extends ListActivity {
                 + "MT: " + timersModel.getMtArray() + "\n" + "RT: "
                 + timersModel.getRtArray() + "\n" + "DeltaT: {"
                 + timersModel.getDeltatTArray() + "}\n"
-                + MemeMainActivity.predict(timersModel);
+                + MemeMainActivity.predict(timersModel, false);
 
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         dialog.setTitle("Time Instant: " + timersModel.getTimeInstant());

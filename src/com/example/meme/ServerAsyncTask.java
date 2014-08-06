@@ -33,6 +33,7 @@ public class ServerAsyncTask extends AsyncTask<Void, Void, String> {
                         || (receivedTimer + Util.TIME_GRADIENT < myTimer)) {
                     Util.myTimers.put(device, receivedTimer
                             + Util.TIME_GRADIENT);
+                    Util.lastContactTimes.put(device, 0.0);
                 }
             }
         }

@@ -38,6 +38,16 @@ public class Util {
         myTimers.put(N2, Double.POSITIVE_INFINITY);
     }
 
+    static Map<String, Double> lastContactTimes = new HashMap<String, Double>();
+    static {
+        lastContactTimes.put(D1, Double.POSITIVE_INFINITY);
+        lastContactTimes.put(D2, Double.POSITIVE_INFINITY);
+        lastContactTimes.put(D3, Double.POSITIVE_INFINITY);
+        lastContactTimes.put(D4, Double.POSITIVE_INFINITY);
+        lastContactTimes.put(N1, Double.POSITIVE_INFINITY);
+        lastContactTimes.put(N2, Double.POSITIVE_INFINITY);
+    }
+
     static Map<String, String> deviceNameAddressMap = new HashMap<String, String>();
     static {
         deviceNameAddressMap.put(D1, "D1");
@@ -81,7 +91,13 @@ public class Util {
                             }
                         }
                     }
-                    // Log.d(TAG, "Timers updated: " + myTimers);
+                    for (String device : lastContactTimes.keySet()) {
+                        double timer = lastContactTimes.get(device);
+                        if (timer != Double.POSITIVE_INFINITY) {
+                            lastContactTimes.put(device, timer + 1.0);
+                        }
+                    }
+//                    Log.d(TAG, "Timers updated: " + lastContactTimes);
                     if (stopUpdate) {
                         Log.d(TAG, "Stopped updating timers locally.");
                         break;

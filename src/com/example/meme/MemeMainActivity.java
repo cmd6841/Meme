@@ -119,13 +119,19 @@ public class MemeMainActivity extends Activity implements OnClickListener,
             memeDir.mkdirs();
         }
         logFile = new File(memeDir.getAbsolutePath(), Util.getNewFileName());
-
+        logFile2 = new File(memeDir.getAbsolutePath(), "t_" + logFile.getName());
         try {
             if (!logFile.exists()) {
                 logFile.createNewFile();
             }
             fileWriter = new FileWriter(logFile);
             logWriter = new BufferedWriter(fileWriter);
+
+            if (!logFile2.exists()) {
+                logFile2.createNewFile();
+            }
+            fileWriter2 = new FileWriter(logFile2);
+            logWriter2 = new BufferedWriter(fileWriter2);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -135,9 +141,9 @@ public class MemeMainActivity extends Activity implements OnClickListener,
     }
 
     File memeDir;
-    File logFile;
-    FileWriter fileWriter;
-    BufferedWriter logWriter;
+    File logFile, logFile2;
+    FileWriter fileWriter, fileWriter2;
+    BufferedWriter logWriter, logWriter2;
     TimersDAO dataSource;
     BackgroundTask backgroundTask;
     private int timesRun = 0;
@@ -397,12 +403,15 @@ public class MemeMainActivity extends Activity implements OnClickListener,
 
             if (!isDatabaseUpdated) {
                 dialog.setTitle("Error!");
-                dialog.setMessage("Current database not updated. No new timers present in database!");
+                dialog.setMessage("Current database not updated. "
+                        + "No new timers present in database!");
             } else {
                 // Get the latest entry of timers in the database.
                 TimersModel timersModel = dataSource.getLatestEntry();
                 dialog.setTitle("Time Instant: " + timersModel.getTimeInstant());
-                dialog.setMessage(predict(timersModel));
+                dialog.setMessage(predict(timersModel, false));
+                if (!stopMeme)
+                    writeToLogFile2(timersModel.toBiggerString());
             }
             dialog.show();
             return true;
@@ -412,12 +421,12 @@ public class MemeMainActivity extends Activity implements OnClickListener,
 
     }
 
-    public static String predict(TimersModel timersModel) {
+    public static String predict(TimersModel timersModel, boolean writeToLog) {
         StringBuffer buffer = new StringBuffer();
         if (timersModel != null) {
             buffer.append("Devices moving closer to " + thisDevice.deviceName
                     + " at t = " + timersModel.getTimeInstant() + ":\n");
-            buffer.append(timersModel.getDevicesMovingCloser());
+            buffer.append(timersModel.getDevicesMovingCloser(writeToLog));
         } else {
             buffer.append("No timers present in database!");
         }
@@ -428,6 +437,16 @@ public class MemeMainActivity extends Activity implements OnClickListener,
         try {
             logWriter.write(content);
             logWriter.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
+        }
+    }
+
+    public void writeToLogFile2(String content) {
+        try {
+            logWriter2.write(content);
+            logWriter2.newLine();
         } catch (IOException e) {
             e.printStackTrace();
             Log.e(TAG, e.getMessage());
@@ -465,6 +484,16 @@ public class MemeMainActivity extends Activity implements OnClickListener,
         super.onDestroy();
         Util.stopUpdate = true;
         closeFiles();
+        if (logFile.length() <= 0) {
+            logFile.delete();
+        }
+        if (logFile2.length() <= 0) {
+            logFile2.delete();
+        }
+    }
+
+    public void deleteUnusedFiles() {
+
     }
 
     public void closeFiles() {
@@ -474,8 +503,11 @@ public class MemeMainActivity extends Activity implements OnClickListener,
                 logWriter.close();
                 logWriter = null;
             }
-            // MediaScannerConnection.scanFile(this,
-            // new String[] { logFile.getAbsolutePath() }, null, null);
+            if (logWriter2 != null) {
+                logWriter2.flush();
+                logWriter2.close();
+                logWriter2 = null;
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

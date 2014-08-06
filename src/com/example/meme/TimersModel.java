@@ -46,11 +46,22 @@ public class TimersModel {
         StringBuffer buffer = new StringBuffer();
         buffer.append(timeInstant + "," + mtArray + "," + rtArray + ","
                 + deltatTArray + "\n");
-        buffer.append(MemeMainActivity.predict(this));
+        buffer.append(MemeMainActivity.predict(this, false));
         return buffer.toString();
     }
 
-    public String getDevicesMovingCloser() {
+    public String toBiggerString() {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("Prediction made at t = " + Util.getCurrentTimeInstant()
+                + "\n");
+        buffer.append(timeInstant + "," + mtArray + "," + rtArray + ","
+                + deltatTArray + "\n");
+        buffer.append(Util.lastContactTimes + "\n");
+        buffer.append(MemeMainActivity.predict(this, true));
+        return buffer.toString();
+    }
+
+    public String getDevicesMovingCloser(boolean writeToLog) {
         StringBuffer buffer = new StringBuffer();
         int count = 0;
 
@@ -66,7 +77,14 @@ public class TimersModel {
                     count += 1;
                     String deviceName = Util.deviceNameAddressMap.get(split[0]
                             .trim());
-                    buffer.append(deviceName + ": " + split[0] + "\n");
+                    if (writeToLog) {
+                        buffer.append(deviceName + ": " + split[0]
+                                + ", Last Updated: "
+                                + Util.lastContactTimes.get(split[0].trim())
+                                + "\n");
+                    } else {
+                        buffer.append(deviceName + ": " + split[0] + "\n");
+                    }
                 }
             } catch (NumberFormatException e) {
                 count -= 1;
@@ -77,5 +95,4 @@ public class TimersModel {
         buffer.append("Total devices moving closer: " + count);
         return buffer.toString();
     }
-
 }
